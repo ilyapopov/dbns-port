@@ -34,8 +34,8 @@ Author
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "basicPsiThermo.H"
-#include "turbulenceModel.H"
+#include "psiThermo.H"
+#include "turbulentFluidThermoModel.H"
 #include "bound.H"
 #include "hllcFlux.H"
 #include "roeFlux.H"
@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
 #   include "createTime.H"
 #   include "createMesh.H"
 #   include "createFields.H"
+
+#   include "createTimeControls.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

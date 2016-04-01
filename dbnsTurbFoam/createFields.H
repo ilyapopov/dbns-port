@@ -1,13 +1,14 @@
     Info<< "Reading thermophysical properties\n" << endl;
 
-    autoPtr<basicPsiThermo> thermo
+    autoPtr<psiThermo> thermo
     (
-        basicPsiThermo::New(mesh)
+        psiThermo::New(mesh)
     );
+    thermo->validate(args.executable(), "h", "e");
 
     // Primitive variables
 
-    volScalarField& h = thermo->h();
+    volScalarField& h = thermo->he();
     volScalarField& p = thermo->p();
     const volScalarField& T = thermo->T();
 
