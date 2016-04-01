@@ -6,14 +6,19 @@ A port of `dbnsFoam` (density-based Navier-Stokes) compressible solver from `foa
 
 First, setup your OpenFOAM environment, for example:
 
-    . ~/OpenFOAM/OpenFOAM-3.0.x/etc/bashrc
+```bash
+. ~/OpenFOAM/OpenFOAM-3.0.x/etc/bashrc
+```
+
     
 Then, get the sources and compile:
 
-    cd $WM_PROJECT_USER_DIR
-    git clone https://github.com/ilyapopov/dbns-port
-    cd dbns-port
-    wmake all
+```bash
+cd $WM_PROJECT_USER_DIR
+git clone https://github.com/ilyapopov/dbns-port
+cd dbns-port
+wmake all
+```
 
 ## Run
 
