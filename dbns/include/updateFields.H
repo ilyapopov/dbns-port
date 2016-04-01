@@ -19,18 +19,21 @@
     dimensionedScalar hMin = CpMin*TMin;
     dimensionedScalar hMax = CpMax*TMax;
 
-    boundMinMax(h, hMin, hMax);
+    //boundMinMax(h, hMin, hMax);
+    bound(h, hMin);
 
     // Correct thermodynamics
     thermo->correct();
 
     // Bound density
-    boundMinMax(rho, rhoMin, rhoMax);
+    //boundMinMax(rho, rhoMin, rhoMax);
+    bound(rho, rhoMin);
 
     // Compute p from rho
     p = rho*(thermo->Cp() - thermo->Cv())*T;
     p.correctBoundaryConditions();
 
     // Bound pressure
-    boundMinMax(p, pMin, pMax);
+    //boundMinMax(p, pMin, pMax);
+    bound(p, pMin);
 }
