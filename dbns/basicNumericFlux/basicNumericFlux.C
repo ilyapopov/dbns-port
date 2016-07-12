@@ -21,80 +21,31 @@ License
     You should have received a copy of the GNU General Public License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    firstOrderLimiter
-
-Description
-    First order limiter: all second order terms are removed
-
-Author
-    Hrvoje Jasak
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef firstOrderLimiter_H
-#define firstOrderLimiter_H
-
-#include "vector.H"
+#include "basicNumericFlux.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-/*---------------------------------------------------------------------------*\
-                      Class firstOrderLimiter Declaration
-\*---------------------------------------------------------------------------*/
-
-class firstOrderLimiter
-{
-public:
-
-    // Constructor
-
-        //- Construct null
-        firstOrderLimiter()
-        {}
+    defineTypeNameAndDebug(basicNumericFlux, 0);
+    defineRunTimeSelectionTable(basicNumericFlux, state);
+}
 
 
-    // Destructor - default
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::basicNumericFlux::basicNumericFlux(const fvMesh& mesh)
+:
+    mesh_(mesh)
+{}
 
 
-    // Member functions
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-        //- Set scalar limiter value
-        inline void limiter
-        (
-            scalar& lim,
-            const scalar& cellVolume,
-            const scalar& deltaOneMax,
-            const scalar& deltaOneMin,
-            const scalar& deltaTwo
-        )
-        {
-            lim = 0;
-        }
+Foam::basicNumericFlux::~basicNumericFlux()
+{}
 
-        //- Set Type limiter
-        template<class Type>
-        inline void limiter
-        (
-            Type& lim,
-            const scalar& cellVolume,
-            const Type& deltaOneMax,
-            const Type& deltaOneMin,
-            const Type& extrapolate
-        )
-        {
-            lim = pTraits<Type>::zero;
-        }
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
-
-#endif
 
 // ************************************************************************* //

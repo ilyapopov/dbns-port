@@ -21,80 +21,42 @@ License
     You should have received a copy of the GNU General Public License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    firstOrderLimiter
-
-Description
-    First order limiter: all second order terms are removed
-
-Author
-    Hrvoje Jasak
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef firstOrderLimiter_H
-#define firstOrderLimiter_H
-
-#include "vector.H"
+#include "basicNumericFlux.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
+Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
+(
+    const volScalarField& p,
+    const volVectorField& U,
+    const volScalarField& T,
+    basicThermo& thermo
+)
 {
+    const dictionary& subDict =
+        p.mesh().schemesDict().subDict("divSchemes").subDict("dbns");
 
-/*---------------------------------------------------------------------------*\
-                      Class firstOrderLimiter Declaration
-\*---------------------------------------------------------------------------*/
+    word name = word(subDict.lookup("flux")) + "Flux"
+        + word(subDict.lookup("limiter")) + "Limiter";
 
-class firstOrderLimiter
-{
-public:
+    Info<< "Selecting numericFlux " << name << endl;
 
-    // Constructor
+    stateConstructorTable::iterator cstrIter =
+        stateConstructorTablePtr_->find(name);
 
-        //- Construct null
-        firstOrderLimiter()
-        {}
+    if (cstrIter == stateConstructorTablePtr_->end())
+    {
+        FatalErrorIn("basicNumericFlux::New(const fvMesh&)")
+            << "Unknown basicNumericFlux type " << name << nl << nl
+            << "Valid basicNumericFlux types are:" << nl
+            << stateConstructorTablePtr_->sortedToc() << nl
+            << exit(FatalError);
+    }
 
+    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, thermo));
+}
 
-    // Destructor - default
-
-
-    // Member functions
-
-        //- Set scalar limiter value
-        inline void limiter
-        (
-            scalar& lim,
-            const scalar& cellVolume,
-            const scalar& deltaOneMax,
-            const scalar& deltaOneMin,
-            const scalar& deltaTwo
-        )
-        {
-            lim = 0;
-        }
-
-        //- Set Type limiter
-        template<class Type>
-        inline void limiter
-        (
-            Type& lim,
-            const scalar& cellVolume,
-            const Type& deltaOneMax,
-            const Type& deltaOneMin,
-            const Type& extrapolate
-        )
-        {
-            lim = pTraits<Type>::zero;
-        }
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
-
-#endif
 
 // ************************************************************************* //

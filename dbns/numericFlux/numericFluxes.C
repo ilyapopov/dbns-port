@@ -21,80 +21,39 @@ License
     You should have received a copy of the GNU General Public License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    firstOrderLimiter
-
-Description
-    First order limiter: all second order terms are removed
-
-Author
-    Hrvoje Jasak
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef firstOrderLimiter_H
-#define firstOrderLimiter_H
+#include "makeBasicNumericFlux.H"
 
-#include "vector.H"
+#include "rusanovFlux.H"
+#include "roeFlux.H"
+#include "betaFlux.H"
+#include "hllcFlux.H"
+#include "hllcALEFlux.H"
+
+#include "firstOrderLimiter.H"
+#include "BarthJespersenLimiter.H"
+#include "VenkatakrishnanLimiter.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-/*---------------------------------------------------------------------------*\
-                      Class firstOrderLimiter Declaration
-\*---------------------------------------------------------------------------*/
+/* * * * * * * * * * * * * * * Private Static Data * * * * * * * * * * * * * */
 
-class firstOrderLimiter
-{
-public:
+#define makeBasicNumericFluxForAllLimiters(Flux)                              \
+makeBasicNumericFlux(Flux, firstOrderLimiter);                                \
+makeBasicNumericFlux(Flux, BarthJespersenLimiter);                            \
+makeBasicNumericFlux(Flux, VenkatakrishnanLimiter);
 
-    // Constructor
-
-        //- Construct null
-        firstOrderLimiter()
-        {}
-
-
-    // Destructor - default
-
-
-    // Member functions
-
-        //- Set scalar limiter value
-        inline void limiter
-        (
-            scalar& lim,
-            const scalar& cellVolume,
-            const scalar& deltaOneMax,
-            const scalar& deltaOneMin,
-            const scalar& deltaTwo
-        )
-        {
-            lim = 0;
-        }
-
-        //- Set Type limiter
-        template<class Type>
-        inline void limiter
-        (
-            Type& lim,
-            const scalar& cellVolume,
-            const Type& deltaOneMax,
-            const Type& deltaOneMin,
-            const Type& extrapolate
-        )
-        {
-            lim = pTraits<Type>::zero;
-        }
-};
-
+makeBasicNumericFluxForAllLimiters(rusanovFlux);
+makeBasicNumericFluxForAllLimiters(betaFlux);
+makeBasicNumericFluxForAllLimiters(roeFlux);
+makeBasicNumericFluxForAllLimiters(hllcFlux);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-
-#endif
 
 // ************************************************************************* //

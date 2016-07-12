@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     3.2
+   \\    /   O peration     | Version:     4.0
     \\  /    A nd           | Web:         http://www.foam-extend.org
      \\/     M anipulation  | For copyright notice see file Copyright
 -------------------------------------------------------------------------------
@@ -28,14 +28,13 @@ Description
     Barth-Jespersen limiter
 
 Author
-    Aleksandar Jemcov, Hrvoje Jasak
+    Aleksandar Jemcov
+    Rewrite by Hrvoje Jasak
 
 \*---------------------------------------------------------------------------*/
 
 #ifndef BarthJespersenLimiter_H
 #define BarthJespersenLimiter_H
-
-#include "vector.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -57,168 +56,58 @@ public:
         {}
 
 
-    // Desctructor - default
+    // Destructor - default
 
 
     // Member functions
 
-        //- Return limiter value
-        inline scalar limiter
+        //- Set scalar limiter value
+        inline void limiter
         (
+            scalar& lim,
             const scalar& cellVolume,
             const scalar& deltaOneMax,
             const scalar& deltaOneMin,
-            const scalar& deltaTwo
+            const scalar& extrapolate
         )
         {
-            if (mag(deltaTwo) < SMALL)
+            if (mag(extrapolate) < SMALL)
             {
-                return 1;
+                return;
             }
-            else
-            {
-                scalar deltaTwoStab = stabilise(deltaTwo, VSMALL);
 
-                return min
+            if (extrapolate - deltaOneMax > SMALL)
+            {
+                lim = min(lim, deltaOneMax/extrapolate);
+            }
+            else if (extrapolate - deltaOneMin < -SMALL)
+            {
+                lim = min(lim, deltaOneMin/extrapolate);
+            }
+        }
+
+        //- Set Type limiter
+        template<class Type>
+        inline void limiter
+        (
+            Type& lim,
+            const scalar& cellVolume,
+            const Type& deltaOneMax,
+            const Type& deltaOneMin,
+            const Type& extrapolate
+        )
+        {
+            for (direction cmpt = 0; cmpt < Type::nComponents; cmpt++)
+            {
+                limiter
                 (
-                    max
-                    (
-                        max(deltaOneMax/deltaTwoStab, 0),
-                        max(deltaOneMin/deltaTwoStab, 0)
-                    ),
-                    1
+                    lim.component(cmpt),
+                    cellVolume,
+                    deltaOneMax.component(cmpt),
+                    deltaOneMin.component(cmpt),
+                    extrapolate.component(cmpt)
                 );
             }
-        }
-
-        //- Return scalar limiter
-        inline scalar limiter
-        (
-            const scalar& cellVolume,
-            const scalar& faceFlux,
-            const scalar& deltaOneMax,
-            const scalar& deltaOneMin,
-            const vector& gradPhiP,
-            const vector& gradPhiN,
-            const vector& d
-        )
-        {
-            return limiter
-            (
-                cellVolume,
-                deltaOneMax,
-                deltaOneMin,
-                (d & gradPhiP)
-            );
-        }
-
-        //- Return vector limiter
-        inline vector limiter
-        (
-            const scalar& cellVolume,
-            const scalar& faceFlux,
-            const vector& deltaOneMax,
-            const vector& deltaOneMin,
-            const tensor& gradPhiP,
-            const tensor& gradPhiN,
-            const vector& d
-        )
-        {
-            vector deltaTwo = d & gradPhiP;
-
-            return vector
-            (
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[vector::X],
-                    deltaOneMin[vector::X],
-                    deltaTwo[vector::X]
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[vector::Y],
-                    deltaOneMin[vector::Y],
-                    deltaTwo[vector::Y]
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[vector::Z],
-                    deltaOneMin[vector::Z],
-                    deltaTwo[vector::Z]
-                )
-            );
-        }
-
-        //- Return limiter for a symmTensor
-        inline symmTensor limiter
-        (
-            const scalar& cellVolume,
-            const scalar& faceFlux,
-            const symmTensor& deltaOneMax,
-            const symmTensor& deltaOneMin,
-            const vector& gradPhiPXX,
-            const vector& gradPhiNXX,
-            const vector& gradPhiPXY,
-            const vector& gradPhiNXY,
-            const vector& gradPhiPXZ,
-            const vector& gradPhiNXZ,
-            const vector& gradPhiPYY,
-            const vector& gradPhiNYY,
-            const vector& gradPhiPYZ,
-            const vector& gradPhiNYZ,
-            const vector& gradPhiPZZ,
-            const vector& gradPhiNZZ,
-            const vector& d
-        )
-        {
-            return symmTensor
-            (
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[0],
-                    deltaOneMin[0],
-                    d & gradPhiPXX
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[1],
-                    deltaOneMin[1],
-                    d & gradPhiPXY
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[2],
-                    deltaOneMin[2],
-                    d & gradPhiPXZ
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[3],
-                    deltaOneMin[3],
-                    d & gradPhiPYY
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[4],
-                    deltaOneMin[4],
-                    d & gradPhiPYZ
-                ),
-                limiter
-                (
-                    cellVolume,
-                    deltaOneMax[5],
-                    deltaOneMin[5],
-                    d & gradPhiPZZ
-                )
-            );
         }
 };
 
