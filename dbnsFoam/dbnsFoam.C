@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     {
 #       include "readTimeControls.H"
 #       include "readFieldBounds.H"
-#       include "compressibleCourantNo.H"
+#       include "acousticCourantNo.H"
 #       include "setDeltaT.H"
 
         runTime++;
