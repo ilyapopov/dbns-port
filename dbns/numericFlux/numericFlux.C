@@ -175,9 +175,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
         const fvPatch& curPatch = p_.boundaryField()[patchi].patch();
 
         // Fluxes
-        fvsPatchScalarField& pRhoFlux  = rhoFlux_.boundaryField()[patchi];
-        fvsPatchVectorField& pRhoUFlux = rhoUFlux_.boundaryField()[patchi];
-        fvsPatchScalarField& pRhoEFlux = rhoEFlux_.boundaryField()[patchi];
+        fvsPatchScalarField& pRhoFlux  = rhoFlux_.boundaryFieldRef()[patchi];
+        fvsPatchVectorField& pRhoUFlux = rhoUFlux_.boundaryFieldRef()[patchi];
+        fvsPatchScalarField& pRhoEFlux = rhoEFlux_.boundaryFieldRef()[patchi];
 
         // Patch fields
         const fvPatchScalarField& pp = p_.boundaryField()[patchi];
