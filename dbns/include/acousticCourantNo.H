@@ -5,13 +5,17 @@ if (mesh.nInternalFaces())
 {
 
     volScalarField speed_of_sound = sqrt(thermo->Cp() / thermo->Cv() * (thermo->Cp() - thermo->Cv()) * T);
-    surfaceScalarField acCo =
-            (mag(phi) / (fvc::interpolate(rho) * mesh.magSf()) + fvc::interpolate(speed_of_sound))
-            * mesh.surfaceInterpolation::deltaCoeffs() * runTime.deltaT();
 
-    CoNum = gMax(acCo.internalField());
+    scalarField sumPhi
+    (
+        fvc::surfaceSum(mag(phi))().internalField() / rho.internalField()
+        + speed_of_sound.internalField() * fvc::surfaceSum(mesh.magSf())().internalField()
+    );
 
-    meanCoNum = gSum(acCo.internalField()) / mesh.nInternalFaces();
+    CoNum = 0.5*gMax(sumPhi/mesh.V().field())*runTime.deltaTValue();
+
+    meanCoNum =
+        0.5*(gSum(sumPhi)/gSum(mesh.V().field()))*runTime.deltaTValue();
 }
 
 Info<< "Acoustic Courant Number mean: " << meanCoNum
